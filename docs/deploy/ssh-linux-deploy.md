@@ -1,0 +1,107 @@
+<!-- docs\deploy\ssh-linux-deploy.md -->
+
+# this
+
+## 从 windows VSCode 连接到 华为云 Linux 云主机
+
+1. 在华为云控制台的 密码安全中心 DEW 生成密钥对并给云主机绑定公钥
+   1. 下载密钥，保存到 windows 目录 `C:\Users\yeah\.ssh\` 下
+2. windows CSCode 安装插件 `Remote SSH`
+   1. 快捷键 `Ctrl + Shift + P` 调出命令快捷键输入框
+   2. 执行命令 `Remote-SSH: Open SSH Configuration File...`
+   3. Select SSH configuration file to update 选择 `C:\Users\yeah\.ssh\config`
+   4. 编辑文件并保存
+```s
+# Read more about SSH config files: https://linux.die.net/man/5/ssh_config
+Host huawei_cloud-server
+    HostName 119.3.250.122
+    User root
+    Port 22
+    IdentityFile C:\Users\yeah\.ssh\hw_cloud-hcss_ecs_1area-KeyPair-4ac6.pem
+    IdentitiesOnly yes
+    StrictHostKeyChecking no
+```
+  5. 点击 vscode 左下角 `><` 图标按钮进入命令输入框 Select an option to open a Remote Window
+     1. 选择 `Connect to Host...    Remtoe-SSH`
+     2. 进入下一个命令输入框 Select configured SSH host or enter user@host
+     3. 选择 `.ssh\config` 文件中给云主机起的名字，比如 `huawei_cloud-server`
+
+## VSCode Remote SSH Linux Operations
+
+### 创建与切换普通用户
+
+```bash
+# 创建普通用户
+useradd -m -s /bin/bash linker
+passwd linker # 设置密码
+
+# 给用户 linker sudo 权限
+usermod -aG sudo linker   # Ubuntu/Debin
+# 或
+usermod -aG wheel linker # CentOS/RHEL
+
+# 切换到 linker
+su - linker
+cd /opt/project
+# 然后使用 VS Code 重新连接这个用户,或者继续在此操作
+```
+
+### 文件夹操作
+
+- 快捷键 `Ctrl + ·` 或 `Ctrl + J` 打开终端窗口
+
+```bash
+mkdir -p /opt/cocresco_linking-laf_server
+cd /opt/cocresco_linking-laf_server
+code .    # 在 VS Code 中打开这个文件夹
+
+pwd   # 输出当前目录绝对路径
+```
+
+### 初始化项目目录
+
+```bash
+git init
+```
+
+### 安装 Node.js 环境（如果服务器上没有）
+
+```bash
+# Ubuntu/Debian
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# 验证
+node -v  # v18.x.x
+npm -v
+```
+
+### 安装 MongoDB (Docker 方式最快)
+
+```bash
+docker run -d --name mongo -p 27017:27017 -v /data/mongo:/data/db mongo:6.0
+```
+
+### 上传项目代码
+
+#### Plan A
+
+- 直接在 Window VS Code 端将代码复制粘贴到控制的文件夹
+
+#### Plan B
+
+- 通 Git Clone 将已有 repo 克隆到 Linux 文件夹
+
+## VS Code SSH 连接 Linux 后自动端口转发到 windows 控制端
+
+- 当服务在 Linux 上运行后
+```bash
+# 在 VS Code 终端运行
+npm start
+# 输出：Server running on http://localhost:3000
+```
+
+VS Code 会自动把这个端口映射到 Windows 本地
+
+## 
+
