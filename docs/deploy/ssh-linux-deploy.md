@@ -157,7 +157,15 @@ cat .git/config
 3. 生成 `Personal access tokens (classic)`
 4. 复制与保存密钥
 
+### 持久存储 token
 
+- Plan A
+  - 临时缓存（内存，默认 15 分钟）
+  - `git config --global credential.helper cache`
+
+- Plan B
+  - 永久存储（磁盘，安全风险）
+  - `git config --global credential.helper store`
 
 ## Git 库初始化与连接
 
