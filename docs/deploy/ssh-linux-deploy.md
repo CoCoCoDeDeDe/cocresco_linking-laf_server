@@ -157,7 +157,7 @@ cat .git/config
 3. 生成 `Personal access tokens (classic)`
 4. 复制与保存密钥
 
-### 持久存储 token
+### 持久存储 Git token
  
 - Plan A
   - 临时缓存（内存，默认 15 分钟）
@@ -198,6 +198,46 @@ git remot -v
 ```bash
 git remote remove origin
 ```
+
+## Git SSH 连接
+
+```bash
+# 确认 SSH 密钥已添加到 GitHub
+cat ~/.ssh/id_ed25519.pub
+
+# 把 HTTPS 改成 SSH 链接
+git remote set-url origin git@github.com:CoCoCoDeDeDe/cocresco_linking-laf_server.git
+
+# 测试连接
+ssh -T git@github.com
+```
+
+## Git 分支关联
+
+### 第一次 push 时配置
+
+- `-u`：`--set-upstream`，建立关联，告诉 Git 以后 main 分支默认推送到 origin 的 main
+
+```bash
+git push -u origin main
+```
+
+### 验证关联
+
+```bash
+git branch -vv
+```
+
+### 配置自动简历上有分支
+
+- Git 版本：2.37+
+- 配置全局自动上游
+
+```bash
+git config --global push.autoSetupRemote true
+```
+
+- 之后即使是新分支，直接 `git push` 也会自动推送到同名远程分支，无需任何一次 `-u`
 
 ## CentOS github 网络连接测试
 
