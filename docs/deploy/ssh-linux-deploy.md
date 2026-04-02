@@ -46,6 +46,13 @@ cd /opt/project
 # 然后使用 VS Code 重新连接这个用户,或者继续在此操作
 ```
 
+### 文件夹权限配置
+
+- root 将文件夹所有权给 linker
+```bash
+chown -R linker:linker /opt/cocresco_linking-laf_server
+```
+
 ### 文件夹操作
 
 - 快捷键 `Ctrl + ·` 或 `Ctrl + J` 打开终端窗口
@@ -102,6 +109,114 @@ npm start
 ```
 
 VS Code 会自动把这个端口映射到 Windows 本地
+
+## Git 基础身份配置
+
+```bash
+# 配置邮箱
+git config --global user.email "xxx@example.com"
+
+# 配置名字
+git config --global user.name "yourname"
+```
+
+## 查看 Git 基础身份信息
+
+- 查看 Git 配置的身份信息
+```bash
+# 查看全局配置 （--global）
+git config --global user.name
+git config --global user.email
+
+# 或者一起查看所有的配置（带身份的部分）
+git config --global --list | grep user
+```
+
+- 查看当前仓库的配置
+```bash
+# 在当前项目目录下执行
+git config user.name
+git config user.email
+
+git config --list | grep user
+```
+
+- 查看 Git 配置文件内容
+```bash
+# 全局配置文件路径
+cat ~/.gitconfig
+
+# 当前仓库的配置
+cat .git/config
+```
+
+## 配置 Git token
+
+1. Github 上 `https://github.com/settings` 页面
+2. Personal access tokens 页面
+3. 生成 `Personal access tokens (classic)`
+4. 复制与保存密钥
+
+
+
+## Git 库初始化与连接
+
+```bash
+echo "# cocresco_linking-laf_server" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+
+# ssh 连接（需要配置密钥）
+git remote add origin git@github.com:CoCoCoDeDeDe/cocresco_linking-laf_server.git
+# 或 https 连接（需要配置 token）
+git remote add origin https://github.com/CoCoCoDeDeDe/cocresco_linking-laf_server.git
+
+git push -u origin main
+```
+
+- 修改 remote URL
+```bash
+git remote set-url origin git@github.com:CoCoCoDeDeDe/cocresco_linking-laf_server.git
+```
+
+- 查看当前配置
+```bash
+git remot -v
+```
+
+- 删除已有 remote URL
+```bash
+git remote remove origin
+```
+
+## CentOS github 网络连接测试
+
+```bash
+# 检查 git 版本
+git --version   # 至少需要2.20+
+
+# 测试 ping
+ping -c github.com
+
+# 测试 443 端口（HTTPS）
+curl -v https://github.com --connect-timeout 10
+
+# 测试 22 端口连通性
+ssh -v -T git@github.com
+
+# 测试 DNS 解析
+nslookup github.com
+```
+
+## 解决 443 端口问题
+
+- 表现：
+  - https git push 错误
+
+- 解决：
+  - 华为云安全组开发 TCP 0.0.0.0 443 入口
 
 ## 
 
