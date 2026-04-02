@@ -318,5 +318,73 @@ sudo firewall-cmd --add-port=3000/tcp --permanent
 sudo firewall-cmd --reload
 ```
 
+## Cloudflare Tunnel 搭建临时 HTTPS 域名
+
+1. 安装 cloudflared
+```bash
+# 下载安装
+curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+
+# 检查文件是否存在
+ls -la cloudflared.deb
+
+# 查看 deb 包内容
+ar t cloudflared.deb
+
+# 根据包内容提取 data 部分
+ar x cloudflared.deb data.tar.gz
+# 或者
+ar x cloudflared.deb data.tar.xz
+
+# 如果是 tar.gz
+tar xzf data.tar.gz
+# 或者如果是 tar.xz
+tar xf data.tar.xz
+
+# 查看解压出来的内容
+ls -la usr/bin/
+
+# 复制到系统目录（这样随处可用）
+cp usr/bin/cloudflared /usr/local/bin/
+chmod +x /usr/local/bin/cloudflared
+
+# 验证安装
+cloudflared --version
+
+# 清理临时文件
+rm -rf cloudflared.deb data.tar.xz usr/
+```
+
+2. 登录授权
+
+```bash
+cloudflared tunnel login
+```
+
+- 执行后会显示一个 URL，复制到浏览器打开，选择你的域名授权，然后下载认证文件
+
+3. 启动临时隧道（最简单）
+
+```bash
+# 直接暴露本地 3000 端口（不需要创建配置文件）
+cloudflared tunnel --url http://localhost:3000
+```
+
+4. 后台运行
+
+- 在后台保持运行：
+```bash
+# 用 nohup 后台运行
+nohup cloudflared tunnel --url http://localhost:3000 > tunnel.log 2>&1 &
+
+# 查看域名
+cat tunnel.log | grep trycloudflare.com
+
+# 停止隧道
+pkill cloudflared
+```
+
+- 注意：临时隧道重启后会更换域名，仅用于测试
+
 ## 
 

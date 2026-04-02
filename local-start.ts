@@ -2,55 +2,67 @@
 import express from 'express';
 import { initDB } from './local-cloud.js';
 import dotenv from 'dotenv';
+import path from 'path';
+import { pathToFileURL } from 'url';
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-// ==========================================
-// 1. 排除常见静态资源请求（放在动态路由之前）
-// ==========================================
+// 排除静态资源
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 app.get('/robots.txt', (req, res) => res.type('text/plain').send('User-agent: *\nDisallow: /'));
 
-// 健康检查端点
+// 健康检查
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
 });
 
-// ==========================================
-// 2. 动态云函数路由（排除已处理的路径）
-// ==========================================
 const functionsDir = './functions';
 
-app.all('/:funcName', async (req, res) => {
-  // 额外的安全检查，防止访问非法路径
-  const funcName = req.params.funcName;
-  
-  // 排除静态资源和特殊路径
-  if (funcName.includes('.') || funcName.includes('/') || funcName === 'favicon') {
-    return res.status(404).json({ code: 404, msg: 'Not found' });
+// 处理所有路径（支持嵌套）
+app.use(async (req, res, next) => {
+  if (req.path === '/favicon.ico' || req.path === '/robots.txt' || req.path === '/health') {
+    return next();
   }
-  
+
   try {
-    const funcModule = await import(`${functionsDir}/${funcName}.ts`);
-    
+    const routePath = req.path.substring(1)
+    if (!routePath) {
+      return res.status(404).json({ code: 404, msg: 'Not found' });
+    }
+
+    // ✅ 修复：使用绝对路径，让 tsx 正确处理
+    const filePath = `./functions/${routePath}.ts`;
+
+    console.log(`[Request] ${req.method} ${req.path} -> ${filePath}`);
+    console.log(`[Debug] CWD: ${process.cwd()}`);
+
+    // 使用 tsx 的 import（去掉 .ts 后缀试试）
+    const modulePath = pathToFileURL(
+      path.join(process.cwd(), 'functions', routePath + '.ts')
+    ).href;
+
+    console.log(`[Debug] Importing: ${modulePath}`);
+
+    const funcModule = await import(modulePath);
+
     const ctx = {
       body: req.body,
       query: req.query,
       headers: req.headers,
       method: req.method,
     };
-    
+
     const result = await funcModule.default(ctx);
     res.json(result);
   } catch (error: any) {
-    console.error(`[Error] Function ${funcName}:`, error.message);
-    res.status(500).json({ 
-      code: -1, 
+    console.error(`[Error] ${req.path}:`, error.message);
+    res.status(500).json({
+      code: -1,
       error: error.message,
-      hint: `Check if functions/${funcName}.ts exists`
+      hint: `Check if functions${req.path}.ts exists`
     });
   }
 });
