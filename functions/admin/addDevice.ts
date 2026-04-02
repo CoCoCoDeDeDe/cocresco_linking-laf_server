@@ -1,8 +1,9 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/admin/addDevice
-import cloud from '@lafjs/cloud'
+import { cloud , ObjectId,  } from '../../local-cloud.js'
+import type { FunctionContext } from '../../local-cloud.js'
 import common from '../utils/common'
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 
 export default async function (ctx: FunctionContext) {
 

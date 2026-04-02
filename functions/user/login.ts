@@ -1,13 +1,14 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/user/login
 // 用于与 laf 云环境进行交互
-import cloud from "@lafjs/cloud";
+import { cloud ,  } from '../../local-cloud.js'
+import type { FunctionContext } from '../../local-cloud.js';
 // 用于创建哈希对象，这里用于对密码进行加密
 import { createHash } from "crypto";
 import jwt from "jsonwebtoken";
 import common from '../utils/common'
 
 // 获取 MongoDB 数据库实例，方便后续对数据库进行操作
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 // JWT 密钥
 const JWT_SECRET = process.env.JWT_SECRET;
 

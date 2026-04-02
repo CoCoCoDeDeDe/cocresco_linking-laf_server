@@ -1,11 +1,12 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/uniIO/storeRecord
-import cloud from '@lafjs/cloud'
+import { cloud , ObjectId,  } from '../../local-cloud.js'
+import type { FunctionContext } from '../../local-cloud.js'
 import common from '../utils/common'
 
 
 export default async function (ctx: FunctionContext) {
 
-  const db = await cloud.mongo.db
+  const db = await cloud.mongo.db()
 
   // console.log('ctx.query:', ctx.query)
   // console.log('ctx.headers:', ctx.headers)

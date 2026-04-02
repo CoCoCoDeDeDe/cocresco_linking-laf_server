@@ -1,9 +1,10 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/admin/db/GetColList
-import cloud from '@lafjs/cloud'
+import { cloud ,  } from '../../../local-cloud.js'
+import type { FunctionContext } from '../../../local-cloud.js'
 
 export async function main(ctx: FunctionContext) {
   // 获取 MongoDB 客户端
-  const db = cloud.mongo.db
+  const db = cloud.mongo.db()
 
   try {
     // 定义集合名称的正则表达式（示例：以 "user_" 开头）

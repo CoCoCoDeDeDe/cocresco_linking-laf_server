@@ -1,8 +1,9 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/Commerce/Commodity/GetCommodity
-import cloud from '@lafjs/cloud'
+import { cloud , ObjectId,  } from '../../../local-cloud.js'
+import type { FunctionContext } from '../../../local-cloud.js'
 import common from '../../utils/common'
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 const CommodityCol = db.collection('IOT2_Commodities')
 const ImageCol = db.collection('IOT2_Images_Base64')
 const PromotionCol = db.collection('IOT2_Promotions')

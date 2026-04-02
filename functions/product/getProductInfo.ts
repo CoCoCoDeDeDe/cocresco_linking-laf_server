@@ -1,8 +1,9 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/product/getProductInfo
-import cloud from '@lafjs/cloud'
+import { cloud , ObjectId,  } from '../../local-cloud.js'
+import type { FunctionContext } from '../../local-cloud.js'
 import common from '../utils/common'
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 
 export default async function getProductInfo (ctx: FunctionContext) {
 
@@ -17,7 +18,7 @@ export default async function getProductInfo (ctx: FunctionContext) {
       break
   }
   const user = laf_token_VerifyRes.user  // user._id 即 user_id
-  console.log('user._id:', user._id)
+  console.log('user._id:', user?._id)
 
   // 获取参数
   let param = {

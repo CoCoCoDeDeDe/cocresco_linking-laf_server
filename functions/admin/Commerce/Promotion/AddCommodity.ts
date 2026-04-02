@@ -1,7 +1,8 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/admin/Commerce/Commodity/AddCommodity
-import cloud from '@lafjs/cloud'
+import { cloud ,  } from '../../../../local-cloud.js'
+import type { FunctionContext } from '../../../../local-cloud.js'
 import common from '../../../utils/common'
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 const PromotionCol = db.collection('IOT2_Promotions')
 
 export default async function (ctx: FunctionContext) {

@@ -1,9 +1,9 @@
-import cloud from '@lafjs/cloud'
+import { cloud } from '../../local-cloud.js'
 import common from '../utils/common'
 
 const IAM_USER_PASSWORD = process.env.IAM_USER_PASSWORD
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 
 // 当在使用华为云需要 IAMUser Token 的云函数时发现 iot2_huaweiIAMTokens 集合中最近的 token 失效时调用该函数, 无传入参数, 返回包含 token 键值对的对象并将华为云的响应数据存入数据库
 export default async function getHuaweiIAMUserTokenByPassword () {

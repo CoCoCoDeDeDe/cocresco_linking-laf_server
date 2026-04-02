@@ -1,11 +1,12 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/Coze/Relay
 
-import cloud from '@lafjs/cloud'
+import { cloud , ObjectId,  } from '../../local-cloud.js'
+import type { FunctionContext } from '../../local-cloud.js'
 import common from '../utils/common'
 import axios from 'axios'
 import https from 'https'
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 const env = process.env
 
 export default async function Relay (ctx: FunctionContext) {

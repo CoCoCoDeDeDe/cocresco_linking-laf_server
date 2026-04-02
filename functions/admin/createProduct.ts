@@ -1,8 +1,9 @@
-import cloud from '@lafjs/cloud'
+import { cloud , ObjectId,  } from '../../local-cloud.js'
+import type { FunctionContext } from '../../local-cloud.js'
 const { MongoClient } = require('mongodb')
 import common from '../utils/common'
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 
 export default async function createProduct (ctx: FunctionContext) {
 

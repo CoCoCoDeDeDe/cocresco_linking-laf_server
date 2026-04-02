@@ -1,13 +1,14 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/images/DeleteImgBase64
 
 
-import cloud from '@lafjs/cloud'
+import { cloud , ObjectId,  } from '../../local-cloud.js'
+import type { FunctionContext } from '../../local-cloud.js'
 import common from '../utils/common'
 const fs = require('fs-extra')
 const path = require('path')
 const sharp = require('sharp')
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 const ImagesCol = db.collection('IOT2_Images_Base64')
 
 export default async function (ctx: FunctionContext) {

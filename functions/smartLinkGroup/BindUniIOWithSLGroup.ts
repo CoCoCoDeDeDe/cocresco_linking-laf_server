@@ -1,8 +1,9 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/smartLinkGroup/BindUniIOWithSLGroup
-import cloud from '@lafjs/cloud'
+import { cloud , ObjectId,  } from '../../local-cloud.js'
+import type { FunctionContext } from '../../local-cloud.js'
 import common from '../utils/common'
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 
 // 接收 {_id: 'uniIO_id'} 数组
 // 缺点1：Device权限验证不严谨

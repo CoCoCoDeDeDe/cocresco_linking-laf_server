@@ -1,8 +1,9 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/device/bindUserWithDevice
-import cloud from '@lafjs/cloud'
+import { cloud ,  } from '../../local-cloud.js'
+import type { FunctionContext } from '../../local-cloud.js'
 import common from '../utils/common'
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 
 // 验证和获取用户 user._id，获取参数 huawei_device_id ，更改指定 huawei_device_id 的设备记录，添加 user_id 为 user._id
 export default async function (ctx: FunctionContext) {

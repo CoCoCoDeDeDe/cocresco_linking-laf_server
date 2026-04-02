@@ -1,5 +1,6 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/smartLinkGroup/GetSmartLinkGroupInfo
-import cloud from '@lafjs/cloud'
+import { cloud , ObjectId,  } from '../../local-cloud.js'
+import type { FunctionContext } from '../../local-cloud.js'
 import common from '../utils/common'
 
 type Type_SLGroupInfo = {
@@ -9,7 +10,7 @@ type Type_SLGroupInfo = {
   SLGroup_UpdateTime: string,
 }
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 
 // smartLinkGroup_id
 // 681ad710ec955cc190f61ae8

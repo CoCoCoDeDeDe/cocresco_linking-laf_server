@@ -1,8 +1,8 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/admin/readLateastHuaweiIAMUserToken
-import cloud from '@lafjs/cloud'
+import { cloud } from '../../local-cloud.js'
 import common from '../utils/common'
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 
 // 每当执行需要华为云 token 的程序时, 如用华为云下行命令 API 下发下行命令, 调用该函数, 无参数输入, 返回包含 token 键值对的对象
 export default async function readLateastHuaweiIAMUserToken() {

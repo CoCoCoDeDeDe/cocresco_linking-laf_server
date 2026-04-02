@@ -8,8 +8,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx ts-node --esm local-start.ts"
+    "start": "npx tsx local-start.ts",
+    "dev": "npx tsx watch local-start.ts"
   },
   "keywords": [],
   "author": "",

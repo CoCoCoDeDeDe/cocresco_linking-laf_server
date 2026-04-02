@@ -1,7 +1,8 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/admin/Commerce/SwiperAdver/AddSwiperAdverGroup
-import cloud from '@lafjs/cloud'
+import { cloud ,  } from '../../../../local-cloud.js'
+import type { FunctionContext } from '../../../../local-cloud.js'
 import common from '../../../utils/common'
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 const SwiperAdverGroupsCol = db.collection('IOT2_SwiperAdverGroups')
 
 export default async function (ctx: FunctionContext) {

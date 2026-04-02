@@ -1,8 +1,9 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/smartLinkGroup/EditSLGroup
-import cloud from '@lafjs/cloud'
+import { cloud , ObjectId,  } from '../../local-cloud.js'
+import type { FunctionContext } from '../../local-cloud.js'
 import common from '../utils/common'
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 
 // 目前只适合编辑名字
 export default async function EditSLGroup(ctx: FunctionContext) {

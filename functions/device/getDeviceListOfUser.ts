@@ -1,8 +1,9 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/device/getDeviceListOfUser
-import cloud from '@lafjs/cloud'
+import { cloud , ObjectId,  } from '../../local-cloud.js'
+import type { FunctionContext } from '../../local-cloud.js'
 import common from '../utils/common'
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 
 // 通过 laf_token 指定用户，按 limit 和 skip 返回该用户的设备
 export default async function (ctx: FunctionContext) {

@@ -1,13 +1,14 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/images/UploadImgListBase64
 // Col_Name: Iot2_Images
 
-import cloud from '@lafjs/cloud'
+import { cloud , ObjectId,  } from '../../local-cloud.js'
+import type { FunctionContext } from '../../local-cloud.js'
 import common from '../utils/common'
 const fs = require('fs-extra')
 const path = require('path')
 const sharp = require('sharp')
 
-const db = cloud.mongo.db
+const db = cloud.mongo.db()
 const ImagesCol = db.collection('IOT2_Images_Base64')
 const PREVIEW_WIDTH = parseInt(process.env.PREVIEW_WIDTH, 10) || 200
 

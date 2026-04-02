@@ -1,11 +1,11 @@
-import cloud from '@lafjs/cloud'
+import { cloud , ObjectId} from '../../local-cloud.js'
 import { createHash } from "crypto";
 import jwt from "jsonwebtoken";
 
 // JWT 密钥
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const db = cloud.mongo.db;
+const db = cloud.mongo.db();
 
 // 将日期转换为指定格式
 function formatDate(date) {

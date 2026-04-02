@@ -1,6 +1,10 @@
 // migrate.js
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const funcDir = './functions';
 
@@ -13,7 +17,6 @@ function getAllTsFiles(dir, files = []) {
     const stat = fs.statSync(fullPath);
     
     if (stat.isDirectory()) {
-      // 递归进入子目录
       getAllTsFiles(fullPath, files);
     } else if (item.endsWith('.ts')) {
       files.push(fullPath);
@@ -23,7 +26,6 @@ function getAllTsFiles(dir, files = []) {
   return files;
 }
 
-// 检查目录是否存在
 if (!fs.existsSync(funcDir)) {
   fs.mkdirSync(funcDir);
   console.log('✅ 已创建 functions 目录');
@@ -31,39 +33,25 @@ if (!fs.existsSync(funcDir)) {
 }
 
 const files = getAllTsFiles(funcDir);
-
-if (files.length === 0) {
-  console.log('⚠️ 没有找到 .ts 文件');
-  process.exit(0);
-}
+console.log(`找到 ${files.length} 个 .ts 文件`);
 
 files.forEach(filePath => {
   let content = fs.readFileSync(filePath, 'utf8');
-  let modified = false;
   
   // 替换 import cloud from '@lafjs/cloud'
-  if (content.includes('@lafjs/cloud')) {
-    content = content.replace(
-      /import\s+cloud\s+from\s+['"]@lafjs\/cloud['"]/,
-      "import { cloud } from '../local-cloud.js'"
-    );
-    
-    // 对于深层目录（如 functions/images/xxx.ts），需要调整相对路径
-    const depth = filePath.split('/').length - 2; // 计算深度
-    const relativePath = '../'.repeat(depth) + 'local-cloud.js';
+  if (content.includes("from '@lafjs/cloud'") || content.includes('from "@lafjs/cloud"')) {
+    // 计算相对路径深度
+    const relativePath = path.relative(path.dirname(filePath), '.');
+    const cloudPath = path.join(relativePath, 'local-cloud.js').replace(/\\/g, '/');
     
     content = content.replace(
       /import\s+cloud\s+from\s+['"]@lafjs\/cloud['"]/,
-      `import { cloud } from '${relativePath}'`
+      `import { cloud } from '${cloudPath}'`
     );
     
-    modified = true;
-  }
-  
-  if (modified) {
     fs.writeFileSync(filePath, content);
     console.log(`✅ 已处理 ${filePath}`);
   }
 });
 
-console.log(`🎉 完成！共处理 ${files.length} 个文件`);
+console.log('🎉 迁移完成！');
