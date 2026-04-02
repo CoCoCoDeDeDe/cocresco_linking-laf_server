@@ -1,14 +1,14 @@
-<!-- docs\deploy\windows_deploy.md -->
+<!-- docs/deploy/laf_migrate.md -->
 
 # this
 
 ## 思路
 
-从原 Sealos Laf 应用直接迁移到开发端 windows，并保留 Laf 框架。
+从原 Sealos Laf 应用直接迁移到开发端 windows 或华为云服务器 centos，并保留 Laf 框架。
   - 保持云函数文件结构不变，但把 `cloud` 对象替换为本地 MongoDB 连接
   - 这样代码结构还是 Laf 云函数的样子（导出 default 函数、使用 cloud.database()），但实际上跑在本地 Windows + 本地 MongoDB 上。
 
-## Windows Dev Deploy Process
+## Migrate Process
 
 ### 安装 laf-cli 和依赖
 
@@ -125,10 +125,19 @@ export default async function (ctx: FunctionContext) {
 
 在项目根目录创建 `.env` 文件，把原来在 Laf 控制台的键值对都搬过来
 
-```s
-# 本地 MongoDB 连接（根据安装情况修改）
+- 本地 MongoDB 连接
+  - windows
+```bash
 DB_URI=mongodb://localhost:27017/dachuang_db
+```
+  - centos
+```bash
+DB_URI=mongodb://localhost:27017/dachuang_db
+# 或(Docker 内网)
+DB_URI=mongodb://mongo:27017
+```
 
+```bash
 # 原来的其他环境变量（从 Laf 控制台抄过来）
 JWT_SECRET=your_jwt_secret_key_here
 APPID=your_app_id
@@ -196,9 +205,39 @@ initDB().then(() => {
 
 ### 运行后端
 
+- 启动 MongoDB
+  - CentOS MongoDB Docker
+```bash
+# CentOS 上启动 MongoDB（Docker）
+docker run -d --name mongo -p 27017:27017 -v /data/mongo:/data/db mongo:6.0
+```
+
+- 启动服务
+  - windows 本地
 ```bash
 # 启动本地服务
 npx ts-node local-start.ts
+```
+  - CentOS 服务器
+  
+```bash
+# 一样的命令！
+npx ts-node local-start.ts
+
+# 或者后台运行（推荐）
+nohup npx ts-node local-start.ts > app.log 2>&1 &
+
+# 查看日志
+tail -f app.log
+```
+
+  - pm2 方案
+```bash
+# 用 pm2 专业管理（推荐安装）
+npm install -g pm2
+pm2 start local-start.ts --name "laf-server"
+pm2 save
+pm2 startup
 ```
 
 ### 测试 API
@@ -223,7 +262,11 @@ net start MongoDB
 
 2. 如果 MongoDB 需要认证（设置了用户名密码），修改 `.env`：
 
-`DB_URI=mongodb://username:password@localhost:27017/dachuang_db?authSource=admin`
+  1. windows
+    `DB_URI=mongodb://username:password@localhost:27017/dachuang_db?authSource=admin`
+
+  <!-- 2. centos
+    `DB_URI=mongodb://localhost:27017/dachuang_db` 或 Docker 内网 `DB_URI=mongodb://mongo:27017` -->
 
 3. 防火墙：确保 Windows 防火墙允许 3000 端口（当从手机或者其他设备访问）
 
@@ -260,7 +303,7 @@ files.forEach(file => {
 
 - 核心问题：本地 Windows 没有公网 IP，华为云 IoTDA 无法主动推送到 Dev 电脑。
 
-### PlanA: Cloudflare Tunnel 内网穿透
+### PlanA: Cloudflare Tunnel 内网穿透 (本地 Dev Windows)
 
 - Tags：免费、最稳定
 
@@ -387,5 +430,42 @@ cloudflared tunnel run laf-local
 2. **签名验证：**务必校验华为云的 X-Hws-Signature 签名，防止伪造请求
 3. **Token 验证：**在 .env 设置 IOT_TOKEN，华为云调用时携带，本地验证
 4. **防火墙：**Windows 防火墙只允许 3000 端口本地访问，通过内网穿透暴露，不要直接开端口到公网
+
+## CentOS 云服务器开放端口给华为云 IoTDA 接入服务
+
+1. 华为云 IoTDA 控制台 -> 数据转发规则
+  1. 填写：`http://服务器公网IP:3000/iot-handler`
+2. 云服务器安全组方向 3000 端口（入方向）
+```bash
+# CentOS 防火墙（如果开了 firewalld）
+sudo firewall-cmd --permanent --add-port=3000/tcp
+sudo firewall-cmd --reload
+```
+
+## 进程管理
+
+### 原生运行
+
+1. Linux
+
+```bash
+# 查看 MongoDB 是否运行（Docker 方式）
+docker ps | grep mongo
+
+# 查看 Node 服务
+ps aux | grep ts-node
+
+# 停止服务
+pkill -f "ts-node"
+```
+
+### 使用 pm2
+
+```bash
+npm install -g pm2
+pm2 start local-start.ts --name "laf-server"
+pm2 save
+pm2 startup
+```
 
 ## 

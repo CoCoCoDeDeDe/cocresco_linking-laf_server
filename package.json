@@ -1,0 +1,30 @@
+{
+  "name": "cocresco_linking-laf_server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "<!-- README.md -->",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx ts-node --esm local-start.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@lafjs/cloud": "^1.0.0",
+    "dotenv": "^17.4.0",
+    "express": "^5.2.1",
+    "mongodb": "^6.21.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}

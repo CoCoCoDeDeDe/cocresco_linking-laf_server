@@ -1,4 +1,4 @@
-<!-- docs\deploy\ssh-linux-deploy.md -->
+<!-- docs\deploy\ssh-centos-deploy.md -->
 
 # this
 
@@ -77,6 +77,10 @@ git init
 # Ubuntu/Debian
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt-get install -y nodejs
+
+# 或 CentOS
+curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+sudo yum install -y nodejs
 
 # 验证
 node -v  # v18.x.x
@@ -265,6 +269,54 @@ nslookup github.com
 
 - 解决：
   - 华为云安全组开发 TCP 0.0.0.0 443 入口
+
+## 基础依赖安装
+
+- 表现，比如：在 `npm install` 时遇到原生模块编译错误
+
+```bash
+# CentOS 安装必要的构建工具
+sudo yum groupinstall "Development Tools"
+sudo yum install python3
+```
+
+- 永久禁用 PostgreSQL 官方仓库（pgdg13）（仓库失效）
+```bash
+# 禁用损坏的 PostgreSQL 仓库
+sudo yum-config-manager --disable pgdg13
+
+# 或者用 sed 命令（如果上面不行）
+sudo sed -i 's/enabled=1/enabled=0/g' /etc/yum.repos.d/pgdg-redhat-all.repo
+```
+
+## 环境全面检查
+
+```bash
+cd /opt/cocresco_linking-laf_server
+
+# 1. 检查 Node 版本
+node -v  # 建议 v18+
+
+# 2. 检查 MongoDB
+docker ps | grep mongo  # 或用 mongosh 连接测试
+
+# 3. 安装依赖
+npm install
+
+# 4. 检查 .env 是否存在且正确
+cat .env
+
+# 5. 启动服务
+npx ts-node local-start.ts
+# 看到 ✅ 本地 MongoDB 已连接 和 🚀 服务已启动 即可
+
+# 6. 测试（服务器本地）
+curl http://localhost:3000/user
+
+# 7. 开放防火墙给华为云（如果需要）
+sudo firewall-cmd --add-port=3000/tcp --permanent
+sudo firewall-cmd --reload
+```
 
 ## 
 
