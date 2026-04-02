@@ -158,7 +158,7 @@ cat .git/config
 4. 复制与保存密钥
 
 ### 持久存储 token
-
+ 
 - Plan A
   - 临时缓存（内存，默认 15 分钟）
   - `git config --global credential.helper cache`
