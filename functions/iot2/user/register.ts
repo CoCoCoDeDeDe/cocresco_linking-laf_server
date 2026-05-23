@@ -1,16 +1,17 @@
 // https://dhb91nur4r.bja.sealos.run/iot2/user/register
 // 从 @lafjs/cloud 模块导入 cloud 对象
-import { cloud ,  } from '../../../local-cloud.js'
+import { cloud, } from '../../../local-cloud.js'
 import type { FunctionContext } from '../../../local-cloud.js';
 // 从 crypto 模块导入 createHash 函数，用于创建哈希对象
 import { createHash } from "crypto";
-import common from '../utils/common'
-
-// 获取云数据库的实例
-const db = cloud.mongo.db()
+import common from '../utils/common.js'
 
 // 导出一个异步函数作为默认导出，该函数接收一个上下文对象 ctx
-export default async function register (ctx: FunctionContext) {
+export default async function register(ctx: FunctionContext) {
+
+  // 获取云数据库的实例
+  const db = cloud.mongo.db()
+
   // 从上下文对象的 body 中获取用户名，如果不存在则赋值为空字符串
   const username = ctx.body?.username || "";
   // 从上下文对象的 body 中获取密码，如果不存在则赋值为空字符串
@@ -20,16 +21,16 @@ export default async function register (ctx: FunctionContext) {
   // 如果不符合规则，返回包含错误信息的对象
   if (!/^[a-zA-Z0-9]{3,16}$/.test(username))
     return {
-    runCondition: 'invalid username',
-    errMsg: '用户名无效',
-  }
+      runCondition: 'invalid username',
+      errMsg: '用户名无效',
+    }
   // 检查密码是否符合规则（3 到 16 位字母或数字）
   // 如果不符合规则，返回包含错误信息的对象
   if (!/^[a-zA-Z0-9]{3,16}$/.test(password))
     return {
-    runCondition: 'invalid password',
-    errMsg: '密码无效',
-  }
+      runCondition: 'invalid password',
+      errMsg: '密码无效',
+    }
 
   // 检查用户名是否已经存在于数据库中
   // 使用 countDocuments 方法统计 users 集合中具有该用户名的文档数量

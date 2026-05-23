@@ -1,11 +1,13 @@
+// functions/iot2/smartLinkGroup/GetSLGroupProfileList.ts
+
 // https://dhb91nur4r.bja.sealos.run/iot2/smartLinkGroup/GetSLGroupProfileList
-import { cloud , ObjectId,  } from '../../../local-cloud.js'
+import { cloud, ObjectId, } from '../../../local-cloud.js'
 import type { FunctionContext } from '../../../local-cloud.js'
 import common from '../utils/common'
 
-const db = cloud.mongo.db()
-
 export default async function GetSLGroupProfileList(ctx: FunctionContext) {
+
+  const db = cloud.mongo.db()
 
   // 验证 laf_token
   const laf_token_VerifyRes = await common.verifyTokenAndGetUser(ctx)
@@ -21,13 +23,13 @@ export default async function GetSLGroupProfileList(ctx: FunctionContext) {
   // 获取 user 信息
   const user = laf_token_VerifyRes.user  // 内含 user._id 即 user_id
   // console.log('user:', user)
-  
+
   // 查询 智联组 集合中 user_id 属性 符合 token 中的 user_id 的 智联组 记录
   let Res_FindSLGroup
-  try{
+  try {
     Res_FindSLGroup = await db.collection('iot2_smartLinkGroups').find(
       {
-        user_id: {$eq: new ObjectId(user._id)},
+        user_id: { $eq: new ObjectId(user._id) },
       }
     ).toArray()
   } catch (err) {
@@ -41,7 +43,7 @@ export default async function GetSLGroupProfileList(ctx: FunctionContext) {
 
   // 整理智联组表的数据格式
   let SLGroupProfileList = []
-  try{
+  try {
     for (let i = 0; i < Res_FindSLGroup.length; i++) {
       SLGroupProfileList[i] = {
         SLGroup_Id: Res_FindSLGroup[i]._id,
@@ -50,7 +52,7 @@ export default async function GetSLGroupProfileList(ctx: FunctionContext) {
         SLGroup_UpdatedTime: Res_FindSLGroup[i].updatedAt,
       }
     }
-  } catch(err) {
+  } catch (err) {
     const errMsg = '数据处理出错'
     console.log(errMsg, ' err:', err)
     return {

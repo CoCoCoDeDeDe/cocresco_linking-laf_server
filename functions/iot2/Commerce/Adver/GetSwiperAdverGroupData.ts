@@ -56,7 +56,7 @@ export default async function GetSwiperAdverGroupData(ctx: FunctionContext) {
     // 根据已经确定的 Group 的 _id 查询属于其的 Items
     const FindItemsRes = await SwiperAdverItemsCol.find(
       {
-        "InGroups._id": { $eq: new ObjectId(FindGroupRes._id) }
+        "InGroups._id": { $eq: new ObjectId(FindGroupRes?._id) }
       },
       {
         projection: {

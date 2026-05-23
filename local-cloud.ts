@@ -1,16 +1,22 @@
+// local-cloud.ts
 import { MongoClient, Db, ObjectId } from 'mongodb';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-let db: Db;
-let client: MongoClient;
+// 使用全局变量确保 require 和 import 共享同一个 db 实例
+const globalAny = global as any;
+if (!globalAny.__mongoDB) {
+  globalAny.__mongoDB = {
+    db: null as Db | null,
+    client: null as MongoClient | null,
+    initPromise: null as Promise<Db> | null,
+  };
+}
+const { __mongoDB } = globalAny;
 
 const uri = process.env.DB_URI || 'mongodb://localhost:27017/dachuang_db';
 
-// ==========================================
-// 导出类型（供云函数使用）
-// ==========================================
 export interface FunctionContext {
   body: any;
   query: any;
@@ -22,28 +28,28 @@ export interface FunctionContext {
 }
 
 export async function initDB() {
-  client = new MongoClient(uri);
-  await client.connect();
-  db = client.db();
-  console.log('✅ MongoDB 已连接');
-  return db;
+  if (__mongoDB.initPromise) return __mongoDB.initPromise;
+  
+  __mongoDB.initPromise = (async () => {
+    __mongoDB.client = new MongoClient(uri);
+    await __mongoDB.client.connect();
+    __mongoDB.db = __mongoDB.client.db();
+    console.log('✅ MongoDB 已连接');
+    return __mongoDB.db;
+  })();
+  
+  return __mongoDB.initPromise;
 }
 
-// ==========================================
-// cloud 对象（兼容 Laf API）
-// ==========================================
 export const cloud = {
   database: () => {
-    if (!db) throw new Error('数据库未初始化');
-    return {
-      collection: (name: string) => db.collection(name),
-    };
+    if (!__mongoDB.db) throw new Error('数据库未初始化');
+    return { collection: (name: string) => __mongoDB.db!.collection(name) };
   },
-  // 兼容 cloud.mongo.db() 写法
   mongo: {
     db: () => {
-      if (!db) throw new Error('数据库未初始化');
-      return db;
+      if (!__mongoDB.db) throw new Error('数据库未初始化');
+      return __mongoDB.db;
     }
   },
   storage: {},
@@ -54,14 +60,11 @@ export const cloud = {
   }
 };
 
-// ==========================================
-// 导出 MongoDB 类型和对象（供云函数使用）
-// ==========================================
 export { ObjectId };
 export type { Db };
 
 process.on('SIGINT', async () => {
-  await client?.close();
+  await __mongoDB.client?.close();
   console.log('数据库连接已关闭');
   process.exit(0);
 });
